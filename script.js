@@ -11,11 +11,16 @@
     if(opt.form){o.method="POST";o.body=opt.form}
     if(opt.post&&!o.body){o.method="POST"}
     return fetch(API+"?action="+action,o).then(function(r){
-      return r.json().catch(function(){return {error:"Risposta non valida dal server: controlla api.php e config.php."}}).then(function(d){
+      return r.text().then(function(t){
+        var d;
+        try{d=JSON.parse(t)}catch(e){
+          var snip=t.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,160);
+          throw new Error("Il server non ha risposto con dati validi (HTTP "+r.status+")"+(snip?": "+snip:"")+".");
+        }
         if(!r.ok||d.error)throw new Error(d.error||("Errore "+r.status));
         return d;
       });
-    });
+    },function(){throw new Error("Impossibile contattare api.php: controlla che sia nella stessa cartella e che la pagina sia aperta dal tuo server (non come file locale).")});
   }
 
   function applyMode(){
