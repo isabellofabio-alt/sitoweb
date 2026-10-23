@@ -98,22 +98,28 @@
       im.src=u;
     });
   }
+  function errText(e){return (e&&(e.code||e.message))||"errore sconosciuto"}
   function addFiles(list){
     if(!canEdit||!db||!assets)return;
-    var files=Array.prototype.filter.call(list,function(f){return /^image\//.test(f.type)});
-    if(!files.length)return;
+    var files=Array.prototype.filter.call(list,function(f){return /^image\//.test(f.type)||/\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name)});
+    if(!files.length){setNote("Seleziona almeno un file immagine.");return}
     setNote("Caricamento di "+files.length+" foto in corso…");
-    var chain=Promise.resolve(),ok=0;
+    var chain=Promise.resolve(),ok=0,errs=[];
     files.forEach(function(file,i){
       chain=chain.then(function(){return shrink(file)}).then(function(b){
-        if(!b)return;
-        return assets.upload(b,{type:"image/jpeg"}).then(function(r){
-          return db.collection("photos").add({aid:r.id,cap:"",ts:Date.now()+i}).then(function(){ok++});
-        });
-      }).catch(function(){});
+        var blob=b||(/^image\/(jpeg|png|webp|gif)$/.test(file.type)?file:null);
+        if(!blob){errs.push(file.name+": formato non supportato");return}
+        return assets.upload(blob,{type:blob.type}).then(function(r){
+          return db.collection("photos").add({aid:r.id,cap:"",ts:Date.now()+i}).then(function(){ok++},function(e){
+            errs.push("salvataggio nel database ("+errText(e)+")");
+            try{assets.delete(r.id)}catch(_){}
+          });
+        },function(e){errs.push("caricamento del file ("+errText(e)+")")});
+      });
     });
     chain.then(function(){
-      setNote(ok===files.length?"Foto salvate nel database.":"Salvate "+ok+" foto su "+files.length+". Le altre non sono state caricate.");
+      if(!errs.length)setNote("Foto salvate nel database.");
+      else setNote((ok?"Salvate "+ok+" foto su "+files.length+". ":"Nessuna foto salvata. ")+"Errore: "+errs[0]+".");
       if(ok)burst(8);
     });
   }
