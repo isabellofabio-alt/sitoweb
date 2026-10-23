@@ -18,9 +18,11 @@
     <button class="btn main" id="add">＋ Aggiungi foto</button>
     <button class="btn" id="play">▶ Guarda il nostro film</button>
     <button class="btn" id="love">♥ Ti amo</button>
+    <button class="btn" id="lock">🔒 Modifica</button>
     <input type="file" id="file" accept="image/*" multiple hidden>
   </div>
 
+  <form class="login" id="login"><input type="password" id="pw" placeholder="Password per modificare" autocomplete="current-password" aria-label="Password"><button class="btn main" type="submit">Entra</button></form>
   <div class="drop" id="drop"><strong>Qui iniziano i nostri ricordi</strong><span>Trascina le vostre foto in questa pagina oppure premi “Aggiungi foto”.</span></div>
   <main class="grid" id="grid" aria-label="Album di foto"></main>
   <p class="note" id="note"></p>

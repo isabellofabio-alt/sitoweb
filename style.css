@@ -61,3 +61,9 @@ dialog::backdrop{background:rgba(30,5,15,.92)}
 @keyframes up{to{transform:translateY(-110vh) rotate(var(--a));opacity:0}}
 .ro .cap{pointer-events:none}.ro .del{display:none}.note{text-align:center;color:var(--muted);font-size:.9rem;margin-top:3rem}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Accesso modifica */
+.login{display:none;max-width:24rem;margin:-1.2rem auto 2rem;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.login.show{display:flex}
+.login input{flex:1 1 10rem;font:inherit;padding:.65rem 1rem;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink)}
+.ro .cap::placeholder{color:transparent}
